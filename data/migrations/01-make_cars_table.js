@@ -1,5 +1,5 @@
 // DO YOUR MAGIC
-exports.up = function(knex) {
+exports.up = function(knex, Promise) {
     return knex.schema.createTable('cars', tbl => {
         tbl.increments();
         tbl.string('vin').unique().notNullable();
@@ -11,6 +11,6 @@ exports.up = function(knex) {
     })
 }
 
-exports.down = function(knex) {
+exports.down = function(knex, Promise) {
     knex.schema.dropTableIfExists('cars')
 }

@@ -1,26 +1,39 @@
 const vinValidator = require('vin-validator')
+const Cars = require('./cars-model')
 
-const checkCarId = (req, res, next) => {
+const checkCarId = async (req, res, next) => {
   // DO YOUR MAGIC
-  if(!req.params.id){
-    res.status(404).json({ message: "car with id <car id> is not found" })
+  try {
+    const car = await Cars.getById(req.params.id)
+     if(!car){
+    res.status(404).json({ message: `car with id ${req.params.id} is not found` })
   }
   else {
     next()
   }
+  } catch (err) {
+    console.log(err)
+  }
+ 
 }
 
 const checkCarPayload = (req, res, next) => {
   // DO YOUR MAGIC
   const car = req.body
-  const required = [car.vin , car.make , car.model , car.mileage]
-  required.forEach( field => {
-    if(!field){
-      res.status(400).json({ message: `${field} is missing` })
+  car.vin , car.make , car.model , car.mileage
+
+    if(!car.vin){
+      res.status(400).json({ message: `${car.vin} is missing` })
+    } else if(!car.make) {
+      res.status(400).json({ message: `${car.make} is missing` })
+    } else if(!car.model) {
+      res.status(400).json({ message: `${car.model} is missing` })
+    } else if(!car.mileage) {
+      res.status(400).json({ message: `${car.mileage} is missing` })
     } else {
       next()
     }
-  } )
+
 }
 
 const checkVinNumberValid = (req, res, next) => {
@@ -33,13 +46,21 @@ const checkVinNumberValid = (req, res, next) => {
   }
 }
 
-const checkVinNumberUnique = (req, res, next) => {
+const checkVinNumberUnique = async (req, res, next) => {
   // DO YOUR MAGIC
-  if(req.body.vin){
-    res.status(400).json({ message: `vin ${req.body.vin} already exists` })
-  } else {
-    next()
+  try {
+    const carVin = await Cars.getByVin(req.body.vin)
+    if(carVin){
+      res.status(400).json({ message: `vin ${carVin} already exists` })
+    } else {
+      next()
+    }
+  } catch (err) {
+    console.log(err)
   }
+    
+
+  
 }
 
 
