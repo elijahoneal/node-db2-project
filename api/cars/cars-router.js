@@ -14,7 +14,7 @@ router.get('/', (req, res, next) => {
 
 router.get('/:id', checkCarId, async (req, res, next) => {
     try {
-        const car = Cars.getById(req.params.id)
+        const car = await Cars.getById(req.params.id)
         res.json(car)  
     } catch (err) {
         res.status( err.status || 500 ).json({message: 'getById request failed'})
@@ -24,7 +24,8 @@ router.get('/:id', checkCarId, async (req, res, next) => {
 
 router.post('/', checkCarPayload, checkVinNumberUnique, checkVinNumberValid, async (req, res, next) => {
     try {
-
+        const newCar = await Cars.create(req.body)
+        res.status(201).json(newCar)
     } catch (err) {
         res.status( err.status || 500 ).json({message: 'create request failed'})
     }
